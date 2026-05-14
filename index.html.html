@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intelligence Data Record — POLRES SOLOK SELATAN</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060c14;--panel:#0b1623;--panel2:#0e1d2e;--border:#1a3050;--border2:#243d5e;
+  --accent:#00d4ff;--accent2:#00ff88;--warn:#ffb800;--danger:#ff3b3b;
+  --text:#c8dff0;--text2:#8baac8;--muted:#5a7a99;
+  --rendah:#4da6ff;--sedang:#00cc66;--tinggi:#ffe033;--sangat:#cc0000;--kritis:#ff1a1a;
+  --glow-blue:0 0 24px rgba(0,212,255,.25);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.018) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.06) 3px,rgba(0,0,0,.06) 4px);pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:1500px;margin:0 auto;padding:16px 20px}
+
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 20px;margin-bottom:14px;background:linear-gradient(90deg,rgba(0,212,255,.08),transparent);border:1px solid var(--border);border-left:3px solid var(--accent)}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.classify-badge{font-family:'Share Tech Mono',monospace;font-size:10px;color:#000;background:var(--warn);padding:3px 10px;letter-spacing:2px;font-weight:700}
+.topbar-title{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.live-pill{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--accent2);letter-spacing:2px;border:1px solid rgba(0,255,136,.3);padding:4px 10px}
+.live-dot{width:7px;height:7px;background:var(--accent2);border-radius:50%;animation:pulse 1.5s ease-in-out infinite;box-shadow:0 0 8px var(--accent2)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.btn-print{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--accent);border:1px solid var(--accent);padding:4px 12px;cursor:pointer;background:transparent;letter-spacing:1px;transition:all .2s}
+.btn-print:hover{background:var(--accent);color:var(--bg)}
+.clock-box{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);text-align:right}
+
+/* HEADER */
+header{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;padding:28px 32px;margin-bottom:16px;background:var(--panel);border:1px solid var(--border);border-top:3px solid var(--accent);position:relative;overflow:hidden}
+header::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:scan 4s linear infinite}
+header::after{content:'';position:absolute;right:0;top:0;bottom:0;width:300px;background:radial-gradient(ellipse at right,rgba(0,212,255,.06),transparent);pointer-events:none}
+@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.hdr-badge{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:3px;margin-bottom:8px;opacity:.7}
+header h1{font-family:'Rajdhani',sans-serif;font-size:38px;font-weight:700;color:#fff;letter-spacing:3px;text-transform:uppercase;line-height:1}
+header h1 span{color:var(--accent)}
+.hdr-sub{font-size:12px;color:var(--muted);letter-spacing:2px;margin-top:6px;text-transform:uppercase}
+.hdr-meta{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.hdr-sync{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);text-align:right}
+.hdr-sync span{color:var(--accent2)}
+
+/* EXEC BANNER */
+.exec-banner{display:flex;align-items:center;gap:16px;padding:14px 24px;margin-bottom:16px;background:linear-gradient(90deg,rgba(0,255,136,.06),rgba(0,212,255,.04));border:1px solid rgba(0,255,136,.2);border-left:3px solid var(--accent2)}
+.exec-icon{font-size:22px}
+.exec-text{flex:1}
+.exec-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--accent2);letter-spacing:2px;text-transform:uppercase}
+.exec-body{font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5}
+.exec-status{font-family:'Share Tech Mono',monospace;font-size:11px;padding:6px 16px;border-radius:2px;letter-spacing:1px;white-space:nowrap;background:rgba(0,255,136,.15);color:var(--accent2);border:1px solid rgba(0,255,136,.4)}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
+.sc{background:var(--panel);border:1px solid var(--border);padding:18px 20px;position:relative;overflow:hidden;transition:all .3s;cursor:default}
+.sc:hover{border-color:var(--accent);box-shadow:var(--glow-blue);transform:translateY(-2px)}
+.sc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.sc.t1::after{background:var(--accent)}.sc.t2::after{background:var(--accent2)}.sc.t3::after{background:var(--warn)}.sc.t4::after{background:#9b59b6}.sc.t5::after{background:var(--rendah)}
+.sc-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.sc-val{font-family:'Rajdhani',sans-serif;font-size:40px;font-weight:700;line-height:1;color:#fff}
+.t1 .sc-val{color:var(--accent);text-shadow:0 0 20px rgba(0,212,255,.4)}
+.t2 .sc-val{color:var(--accent2);text-shadow:0 0 20px rgba(0,255,136,.3)}
+.t3 .sc-val{color:var(--warn);text-shadow:0 0 20px rgba(255,184,0,.3)}
+.t4 .sc-val{color:#c39bd3}.t5 .sc-val{color:var(--rendah)}
+.sc-desc{font-size:10px;color:var(--muted);margin-top:4px}
+.sc-ico{position:absolute;top:14px;right:14px;font-size:24px;opacity:.12}
+
+/* GRID */
+.grid3{display:grid;grid-template-columns:1.2fr 1fr 0.8fr;gap:12px;margin-bottom:12px;align-items:start}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;align-items:start}
+.grid2b{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin-bottom:12px;align-items:start}
+.grid1{margin-bottom:12px}
+
+/* PANEL */
+.panel{background:var(--panel);border:1px solid var(--border);overflow:hidden}
+.ph{padding:12px 20px;background:var(--panel2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.pt{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.pt::before{content:'';width:3px;height:13px;background:var(--accent);display:inline-block}
+.pb{padding:18px 20px}
+.ph-tag{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted)}
+
+/* TIMELINE */
+.tl{width:100%}
+.tl-scroll{max-height:310px;overflow-y:auto;padding-right:4px}
+.tl-scroll::-webkit-scrollbar{width:3px}
+.tl-scroll::-webkit-scrollbar-track{background:transparent}
+.tl-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.tl-scroll::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+.tl-entry{display:grid;grid-template-columns:90px 1fr auto auto;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(26,48,80,.4);animation:fi .3s ease both}
+@keyframes fi{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.tl-date{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted)}
+.tl-info{display:flex;flex-direction:column;gap:2px}
+.tl-area{font-size:11px;color:var(--text);font-weight:500}
+.tl-action{font-size:9px;color:var(--muted);font-family:'Share Tech Mono',monospace}
+.tl-score{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;min-width:28px;text-align:center}
+.rb{font-family:'Share Tech Mono',monospace;font-size:8px;padding:2px 7px;border-radius:2px;letter-spacing:1px;white-space:nowrap}
+.rRENDAH{background:rgba(77,166,255,.15);color:var(--rendah);border:1px solid rgba(77,166,255,.4)}
+.rMENENGAH,.rSEDANG{background:rgba(0,204,102,.15);color:var(--sedang);border:1px solid rgba(0,204,102,.4)}
+.rTINGGI{background:rgba(255,224,51,.15);color:var(--tinggi);border:1px solid rgba(255,224,51,.4)}
+.rSANGAT{background:rgba(204,0,0,.2);color:#ff6666;border:1px solid rgba(204,0,0,.5)}
+.rEKSTRIM{background:rgba(255,26,26,.2);color:var(--kritis);border:1px solid rgba(255,26,26,.5)}
+
+/* BARS */
+.bars{display:flex;flex-direction:column;gap:7px}
+.bar-row{display:flex;flex-direction:column;gap:3px}
+.bar-lbl{display:flex;justify-content:space-between;align-items:center}
+.bar-name{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text);letter-spacing:.5px}
+.bar-num{font-family:'Rajdhani',monospace;font-size:13px;font-weight:600}
+.bar-bg{height:5px;background:rgba(26,48,80,.8);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+
+/* HEATMAP */
+.hm{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px}
+.kw{padding:7px 9px;position:relative;overflow:hidden;cursor:default;transition:transform .2s,box-shadow .2s;border:1px solid var(--border)}
+.kw:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.kw::before{content:'';position:absolute;inset:0;opacity:.1;background:var(--c,#333)}
+.kw-n{font-size:9px;color:var(--text);line-height:1.3;margin-bottom:3px;position:relative}
+.kw-s{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;line-height:1;position:relative}
+
+/* MATRIX */
+.matrix-wrap{overflow-x:auto}
+.mtx{width:100%;border-collapse:collapse;font-size:10px;font-family:'Share Tech Mono',monospace}
+.mtx th{padding:7px 8px;background:var(--panel2);color:var(--muted);font-weight:400;letter-spacing:1px;text-align:center;border:1px solid var(--border);font-size:9px}
+.mtx td{padding:7px 8px;border:1px solid var(--border);text-align:center;font-size:10px;cursor:default;transition:filter .2s}
+.mtx td:hover{filter:brightness(1.4)}
+.ml{background:rgba(77,166,255,.15);color:var(--rendah)}
+.mm{background:rgba(0,204,102,.15);color:var(--sedang)}
+.mh{background:rgba(255,224,51,.15);color:var(--tinggi)}
+.mc{background:rgba(204,0,0,.25);color:#ff8080}
+.me{background:rgba(255,26,26,.3);color:var(--kritis);font-weight:700}
+.ax{font-size:8px;color:var(--muted);letter-spacing:1px}
+
+/* REKOMENDASI */
+.rek-tabs{display:flex;gap:3px;margin-bottom:14px;flex-wrap:wrap}
+.rtab{padding:5px 11px;font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:1px;border:1px solid var(--border);cursor:pointer;transition:all .2s;color:var(--muted);background:transparent;text-transform:uppercase}
+.rtab:hover{border-color:var(--accent);color:var(--accent)}
+.rtab.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.rpanel{display:none;max-height:260px;overflow-y:auto}
+.rpanel.on{display:block}
+.rpanel::-webkit-scrollbar{width:3px}
+.rpanel::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.ri{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(26,48,80,.4)}
+.rd{width:5px;height:5px;background:var(--accent);border-radius:50%;margin-top:5px;flex-shrink:0;box-shadow:0 0 6px var(--accent)}
+.rt{font-size:11px;color:var(--text);line-height:1.6}
+.rt strong{color:var(--accent);font-weight:600}
+
+/* LEGEND */
+.leg{display:flex;gap:14px;flex-wrap:wrap}
+.li{display:flex;align-items:center;gap:5px;font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--muted)}
+.ld{width:7px;height:7px;border-radius:50%}
+
+/* CHART */
+.chart-wrap{position:relative;height:200px}
+.chart-wrap-lg{position:relative;height:240px}
+
+/* MATRIX LEGEND */
+.mx-legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.mxl{display:flex;align-items:center;gap:4px;font-size:8px;font-family:'Share Tech Mono',monospace}
+.mxl-box{width:10px;height:10px;border-radius:1px}
+
+/* STATES */
+.loading{text-align:center;padding:28px;font-family:'Share Tech Mono',monospace;color:var(--muted);font-size:10px;letter-spacing:2px}
+.err{padding:14px;font-family:'Share Tech Mono',monospace;color:var(--danger);font-size:10px;border:1px solid rgba(255,26,26,.3);background:rgba(255,26,26,.05);line-height:1.8}
+
+/* FOOTER */
+footer{margin-top:14px;padding:12px 20px;background:var(--panel);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.ft{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px}
+.fc{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--warn);letter-spacing:3px;border:1px solid var(--warn);padding:2px 8px}
+
+@media(max-width:1200px){.stats{grid-template-columns:repeat(3,1fr)}.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.grid3,.grid2,.grid2b{grid-template-columns:1fr}}
+@media print{body{background:#fff !important;color:#000 !important}body::before,body::after{display:none}.no-print{display:none !important}.panel{border:1px solid #ccc !important;background:#fff !important;break-inside:avoid}.wrap{padding:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- TOP BAR -->
+<div class="topbar no-print">
+  <div class="topbar-left">
+    <img src="data:image/png;base64,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" alt="Supreme Energy" style="height:22px;background:#fff;padding:2px 6px;border-radius:2px">
+    <div class="classify-badge">⚠ INTERNAL USE ONLY</div>
+    <div class="topbar-title">SISTEM MONITORING RISIKO KEAMANAN</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:1px;border-left:1px solid var(--border);padding-left:12px">PIC: DARYONO / ICHSAN</div>
+  </div>
+  <div class="topbar-right">
+    <div class="live-pill"><div class="live-dot"></div>LIVE · GOOGLE SHEETS</div>
+    <button class="btn-print" onclick="window.print()">🖨 CETAK / PDF</button>
+    <div class="clock-box">
+      <div id="clock" style="color:var(--accent)">—</div>
+      <div id="sync-status" style="font-size:9px">MEMUAT...</div>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div>
+    <div class="hdr-badge">▸ INTELLIGENCE DATA RECORD SYSTEM v2.0</div>
+    <h1>INTELLIGENCE <span>DATA</span> RECORD</h1>
+    <div class="hdr-sub">SOLOK SELATAN &nbsp;·&nbsp; SECURITY RISK MONITORING SYSTEM</div>
+  </div>
+  <div class="hdr-meta">
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:2px">PERIODE PEMANTAUAN</div>
+    <div style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--accent)" id="period-range">—</div>
+    <div class="hdr-sync">AUTO-REFRESH &nbsp;<span>SETIAP 5 MENIT</span></div>
+  </div>
+</header>
+
+<!-- EXEC BANNER -->
+<div class="exec-banner">
+  <div class="exec-icon">🛡️</div>
+  <div class="exec-text">
+    <div class="exec-title">EXECUTIVE SUMMARY</div>
+    <div class="exec-body" id="exec-summary">Memuat ringkasan kondisi keamanan...</div>
+  </div>
+  <div class="exec-status" id="exec-badge">MEMUAT...</div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="sc t1"><div class="sc-ico">📋</div><div class="sc-lbl">TOTAL REKAMAN</div><div class="sc-val" id="v-total">—</div><div class="sc-desc">Entri data intel tercatat</div></div>
+  <div class="sc t2"><div class="sc-ico">🛡️</div><div class="sc-lbl">STATUS AMAN</div><div class="sc-val" id="v-secure">—</div><div class="sc-desc" id="v-pct">—</div></div>
+  <div class="sc t3"><div class="sc-ico">⚡</div><div class="sc-lbl">AVG RISK SCORE</div><div class="sc-val" id="v-avg">—</div><div class="sc-desc">Rata-rata skor risiko</div></div>
+  <div class="sc t4"><div class="sc-ico">📍</div><div class="sc-lbl">KEYWORD DIPANTAU</div><div class="sc-val" id="v-kw">—</div><div class="sc-desc">Indikator ancaman aktif</div></div>
+  <div class="sc t5"><div class="sc-ico">📅</div><div class="sc-lbl">HARI PEMANTAUAN</div><div class="sc-val" id="v-days">—</div><div class="sc-desc">Durasi periode aktif</div></div>
+</div>
+
+<!-- ROW 1: Timeline + Gauge + Donut -->
+<div class="grid3">
+  <div class="panel">
+    <div class="ph"><div class="pt">REKAMAN INTEL KRONOLOGIS</div><div class="ph-tag" id="intel-cnt">MEMUAT...</div></div>
+    <div class="pb" style="padding-bottom:10px">
+      <div class="tl-scroll" id="tl"><div class="loading"><div class="live-dot" style="margin:0 auto 10px"></div>MENGAMBIL DATA...</div></div>
+      <div style="height:1px;background:linear-gradient(90deg,var(--accent),transparent);margin:8px 0 6px"></div>
+      <div class="leg">
+        <div class="li"><div class="ld" style="background:var(--rendah)"></div>RENDAH</div>
+        <div class="li"><div class="ld" style="background:var(--sedang)"></div>MENENGAH</div>
+        <div class="li"><div class="ld" style="background:var(--tinggi)"></div>TINGGI</div>
+        <div class="li"><div class="ld" style="background:var(--sangat)"></div>SANGAT TINGGI</div>
+        <div class="li"><div class="ld" style="background:var(--kritis)"></div>EKSTRIM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAUGE SPEEDOMETER -->
+  <div class="panel">
+    <div class="ph"><div class="pt">RISK LEVEL TERKINI</div><div class="ph-tag" id="gauge-date">DATA TERKINI</div></div>
+    <div class="pb" style="display:flex;flex-direction:column;align-items:center;padding:14px 20px">
+      <canvas id="gauge-canvas" width="320" height="200" style="max-width:100%"></canvas>
+      <div style="text-align:center;margin-top:0">
+        <div id="gauge-score" style="font-family:'Rajdhani',sans-serif;font-size:54px;font-weight:700;color:var(--accent);line-height:1">—</div>
+        <div id="gauge-level" style="font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:3px;margin-top:4px;color:var(--accent)">—</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px;letter-spacing:1px" id="gauge-info">RISK SCORE TERKINI / MAX 25</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;width:100%;margin-top:12px;padding:0 2px">
+        <span style="font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--rendah)">RENDAH</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--sedang)">MENENGAH</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--tinggi)">TINGGI</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:7px;color:#ff8080">S.TINGGI</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--kritis)">EKSTRIM</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DONUT -->
+  <div class="panel">
+    <div class="ph"><div class="pt">DISTRIBUSI LEVEL RISIKO</div><div class="ph-tag">PIE CHART</div></div>
+    <div class="pb">
+      <div class="chart-wrap"><canvas id="chart-donut"></canvas></div>
+      <div id="donut-legend" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 2: Keywords + Matrix + Rekomendasi -->
+<div class="grid3">
+  <div class="panel">
+    <div class="ph"><div class="pt">KEYWORD RISIKO TERTINGGI</div><div class="ph-tag">TOP 15</div></div>
+    <div class="pb"><div class="bars" id="kw-bars"><div class="loading"><div class="live-dot" style="margin:0 auto 10px"></div>MENGAMBIL DATA...</div></div></div>
+  </div>
+  <div class="panel">
+    <div class="ph"><div class="pt">SECURITY RISK MATRIX</div><div class="ph-tag">I × L</div></div>
+    <div class="pb">
+      <div class="matrix-wrap"><table class="mtx" id="mtx"></table></div>
+      <div class="mx-legend">
+        <div class="mxl"><div class="mxl-box" style="background:rgba(77,166,255,.3);border:1px solid var(--rendah)"></div><span style="color:var(--rendah)">RENDAH</span></div>
+        <div class="mxl"><div class="mxl-box" style="background:rgba(0,204,102,.3);border:1px solid var(--sedang)"></div><span style="color:var(--sedang)">MENENGAH</span></div>
+        <div class="mxl"><div class="mxl-box" style="background:rgba(255,224,51,.3);border:1px solid var(--tinggi)"></div><span style="color:var(--tinggi)">TINGGI</span></div>
+        <div class="mxl"><div class="mxl-box" style="background:rgba(204,0,0,.4);border:1px solid #cc0000"></div><span style="color:#ff8080">S.TINGGI</span></div>
+        <div class="mxl"><div class="mxl-box" style="background:rgba(255,26,26,.4);border:1px solid var(--kritis)"></div><span style="color:var(--kritis)">EKSTRIM</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ph"><div class="pt">REKOMENDASI RISIKO</div><div class="ph-tag">6 KATEGORI</div></div>
+    <div class="pb">
+      <div class="rek-tabs" id="rtabs"></div>
+      <div id="rpanels"><div class="loading"><div class="live-dot" style="margin:0 auto 10px"></div>MEMUAT...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 3: KW Chart + Cat Pie -->
+<div class="grid2b">
+  <div class="panel">
+    <div class="ph"><div class="pt">KEYWORD SCORE CHART — TOP 20</div><div class="ph-tag">NILAI RISIKO</div></div>
+    <div class="pb"><div class="chart-wrap-lg"><canvas id="chart-kw"></canvas></div></div>
+  </div>
+  <div class="panel">
+    <div class="ph"><div class="pt">DISTRIBUSI KATEGORI RISIKO</div><div class="ph-tag">KEYWORD</div></div>
+    <div class="pb"><div class="chart-wrap"><canvas id="chart-cat"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ROW 4: HEATMAP -->
+<div class="panel grid1">
+  <div class="ph"><div class="pt">KEYWORD THREAT HEATMAP</div><div class="ph-tag" id="hm-cnt">MEMUAT...</div></div>
+  <div class="pb"><div class="hm" id="heatmap"><div class="loading"><div class="live-dot" style="margin:0 auto 10px"></div>MEMUAT HEATMAP...</div></div></div>
+</div>
+
+<footer>
+  <div class="ft">SOLOK SELATAN &nbsp;|&nbsp; <span style="color:var(--accent2)">⬤ LIVE GOOGLE SHEETS · AUTO-REFRESH 5 MENIT</span> &nbsp;|&nbsp; PIC: DARYONO / ICHSAN &nbsp;|&nbsp; <span id="gen-date"></span></div>
+  <div class="fc">INTERNAL USE ONLY</div>
+</footer>
+</div>
+
+<script>
+// ═══════════════════════
+// CONFIG
+// ═══════════════════════
+var GS_BASE    = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1DVMfVkLBBjrmZXy8kicTN1vHXe0MqhStzgFtRT8zvrww0tEGivixRLgsHtoi3Q/pub';
+var GS_INTEL   = GS_BASE + '?gid=872786727&single=true&output=csv';
+var GS_KEYWORD = GS_BASE + '?gid=38504057&single=true&output=csv';
+var GS_REK     = GS_BASE + '?gid=1969465284&single=true&output=csv';
+var PROXIES    = ['https://corsproxy.io/?','https://api.allorigins.win/raw?url=','https://api.codetabs.com/v1/proxy?quest=','https://corsproxy.org/?'];
+
+// ═══════════════════════
+// FETCH
+// ═══════════════════════
+function xhrGet(url) {
+  return new Promise(function(res,rej){
+    var x=new XMLHttpRequest();
+    x.open('GET',url,true);x.timeout=9000;
+    x.onload=function(){if(x.status>=200&&x.status<300&&x.responseText&&x.responseText.length>5)res(x.responseText);else rej(new Error('HTTP '+x.status));};
+    x.onerror=x.ontimeout=function(){rej(new Error('Network'));};
+    x.send();
+  });
+}
+function fetchData(url){
+  var chain=xhrGet(url);
+  PROXIES.forEach(function(p){chain=chain.catch(function(){return xhrGet(p+encodeURIComponent(url));});});
+  return chain.catch(function(){throw new Error('Semua koneksi gagal');});
+}
+
+// ═══════════════════════
+// CSV
+// ═══════════════════════
+function parseCSV(text){
+  return text.trim().split('\n').map(function(line){
+    var cols=[],cur='',inQ=false;
+    for(var i=0;i<line.length;i++){var ch=line[i];if(ch==='"')inQ=!inQ;else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}else cur+=ch;}
+    cols.push(cur.trim());return cols;
+  });
+}
+
+// ═══════════════════════
+// HELPERS
+// ═══════════════════════
+function parseDate(raw){
+  if(!raw)return null;
+  var s=raw.trim().split('/');
+  if(s.length===3){var d=new Date(parseInt(s[2]),parseInt(s[1])-1,parseInt(s[0]));if(!isNaN(d)&&d.getFullYear()>2000)return d;}
+  var d2=new Date(raw);return isNaN(d2)?null:d2;
+}
+function fmtDate(r){var d=parseDate(r);return d?d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase():r;}
+function fmtShort(r){var d=parseDate(r);return d?d.toLocaleDateString('id-ID',{day:'2-digit',month:'short'}).toUpperCase():r;}
+function kwColor(s){
+  if(s>=25)return'#ff0000';if(s>=15)return'#ff3b3b';if(s>=12)return'#e74c3c';
+  if(s>=10)return'#e67e22';if(s>=9)return'#f08030';if(s>=8)return'#f39c12';
+  if(s>=6)return'#d4a017';if(s>=5)return'#2ecc71';if(s>=4)return'#27ae60';
+  if(s>=3)return'#16a085';return'#3498db';
+}
+function lvlColor(l){var v=(l||'').toUpperCase();if(v.indexOf('EKSTRIM')>=0)return'var(--kritis)';if(v.indexOf('SANGAT')>=0)return'var(--sangat)';if(v==='TINGGI')return'var(--tinggi)';if(v==='MENENGAH'||v==='SEDANG')return'var(--sedang)';return'var(--rendah)';}
+function lvlClass(l){var v=(l||'').toUpperCase();if(v.indexOf('EKSTRIM')>=0)return'EKSTRIM';if(v.indexOf('SANGAT')>=0)return'SANGAT';if(v==='TINGGI')return'TINGGI';if(v==='MENENGAH'||v==='SEDANG')return'MENENGAH';return'RENDAH';}
+function colIdx(h,n){var nl=n.toLowerCase();for(var i=0;i<h.length;i++)if(h[i].indexOf(nl)>=0)return i;return -1;}
+function getCol(r,h,n){var i=colIdx(h,n);return i>=0?(r[i]||'').trim():'';}
+
+// ═══════════════════════
+// CLOCK
+// ═══════════════════════
+function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}).toUpperCase();}
+updateClock();setInterval(updateClock,1000);
+document.getElementById('gen-date').textContent=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'}).toUpperCase();
+
+Chart.defaults.color='#5a7a99';
+Chart.defaults.font.family="'Share Tech Mono',monospace";
+Chart.defaults.font.size=9;
+var donutChart=null,kwChart=null,catChart=null;
+function destroyChart(c){if(c){try{c.destroy();}catch(e){}}return null;}
+
+// ═══════════════════════════════════════
+// GAUGE SPEEDOMETER (premium)
+// ═══════════════════════════════════════
+function drawGauge(score, maxScore, level) {
+  var canvas = document.getElementById('gauge-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  var cx = W / 2, cy = H - 10;
+  var R  = Math.min(W * 0.43, H * 0.82);
+  var startAngle = Math.PI, totalArc = Math.PI;
+
+  // Zone colors
+  var zones = [
+    {pct:0.20,color:'#4da6ff'},
+    {pct:0.20,color:'#00cc66'},
+    {pct:0.20,color:'#ffe033'},
+    {pct:0.20,color:'#cc0000'},
+    {pct:0.20,color:'#ff1a1a'},
+  ];
+
+  // Background track
+  ctx.beginPath();
+  ctx.arc(cx,cy,R,startAngle,startAngle+totalArc);
+  ctx.lineWidth=28;ctx.strokeStyle='rgba(26,48,80,0.9)';ctx.lineCap='butt';ctx.stroke();
+
+  // Zone arcs
+  var aS=startAngle;
+  zones.forEach(function(z){
+    var aE=aS+z.pct*totalArc;
+    ctx.beginPath();ctx.arc(cx,cy,R,aS,aE);
+    ctx.lineWidth=28;ctx.strokeStyle=z.color+'55';ctx.lineCap='butt';ctx.stroke();
+    // Bright edge
+    ctx.beginPath();ctx.arc(cx,cy,R-11,aS+0.015,aE-0.015);
+    ctx.lineWidth=2;ctx.strokeStyle=z.color+'55';ctx.stroke();
+    aS=aE;
+  });
+
+  // Active arc
+  var pct = Math.min(Math.max(score/maxScore,0),1);
+  var activeEnd = startAngle + (pct>0?pct:0.018)*totalArc;
+  // Warna berdasarkan level risiko aktual dari GS
+  var lv = (level||'').toUpperCase();
+  var activeColor = (lv.indexOf('EKSTRIM')>=0)  ? '#ff1a1a' :
+                    (lv.indexOf('SANGAT')>=0)    ? '#cc0000' :
+                    (lv==='TINGGI')              ? '#ffe033' :
+                    (lv==='MENENGAH'||lv==='SEDANG') ? '#00cc66' :
+                    score===0                    ? '#4da6ff' :
+                    score<=5                     ? '#4da6ff' :
+                    score<=10                    ? '#00cc66' :
+                    score<=15                    ? '#ffe033' :
+                    score<=20                    ? '#cc0000' : '#ff1a1a';
+
+  // Glow
+  ctx.beginPath();ctx.arc(cx,cy,R,startAngle,activeEnd);
+  ctx.lineWidth=42;ctx.strokeStyle=activeColor+'18';ctx.lineCap='round';ctx.stroke();
+  // Main
+  ctx.beginPath();ctx.arc(cx,cy,R,startAngle,activeEnd);
+  ctx.lineWidth=28;ctx.strokeStyle=activeColor;
+  ctx.shadowColor=activeColor;ctx.shadowBlur=20;ctx.lineCap='round';ctx.stroke();
+  ctx.shadowBlur=0;
+
+  // Tick marks
+  [0,5,10,15,20,25].forEach(function(v,i,arr){
+    var a=startAngle+(v/maxScore)*totalArc;
+    var t1x=cx+Math.cos(a)*(R-18),t1y=cy+Math.sin(a)*(R-18);
+    var t2x=cx+Math.cos(a)*(R-6), t2y=cy+Math.sin(a)*(R-6);
+    ctx.beginPath();ctx.moveTo(t1x,t1y);ctx.lineTo(t2x,t2y);
+    ctx.lineWidth=1.5;ctx.strokeStyle='#2a4060';ctx.stroke();
+    var lx=cx+Math.cos(a)*(R+18),ly=cy+Math.sin(a)*(R+18);
+    ctx.fillStyle='#5a7a99';ctx.font="bold 9px 'Share Tech Mono',monospace";
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(v),lx,ly);
+  });
+
+  // Needle
+  var nA=startAngle+pct*totalArc, nL=R-6;
+  ctx.save();ctx.translate(cx,cy);
+  // Shadow
+  ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(nA)*nL,Math.sin(nA)*nL);
+  ctx.lineWidth=5;ctx.strokeStyle='rgba(0,0,0,0.5)';ctx.lineCap='round';ctx.stroke();
+  // Needle
+  ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(nA)*nL,Math.sin(nA)*nL);
+  ctx.lineWidth=3;ctx.strokeStyle='#ffffff';
+  ctx.shadowColor='#ffffff';ctx.shadowBlur=12;ctx.lineCap='round';ctx.stroke();
+  ctx.shadowBlur=0;
+  // Center dot
+  ctx.beginPath();ctx.arc(0,0,11,0,2*Math.PI);
+  ctx.fillStyle=activeColor;ctx.shadowColor=activeColor;ctx.shadowBlur=18;ctx.fill();
+  ctx.beginPath();ctx.arc(0,0,5,0,2*Math.PI);
+  ctx.fillStyle='#060c14';ctx.shadowBlur=0;ctx.fill();
+  ctx.restore();
+
+  // Labels
+  var lvlText = (lv.indexOf('EKSTRIM')>=0)      ? '🚨 DARURAT' :
+               (lv.indexOf('SANGAT')>=0)          ? '🔴 AWAS' :
+               (lv==='TINGGI')                    ? '🔶 SIAGA' :
+               (lv==='MENENGAH'||lv==='SEDANG')   ? '⚠️ WASPADA' :
+               (score===0||score<=5)              ? '✅ AMAN TERKENDALI' :
+               score<=10                          ? '⚠️ WASPADA' :
+               score<=15                          ? '🔶 SIAGA' :
+               score<=20                          ? '🔴 AWAS' : '🚨 DARURAT';
+  var se=document.getElementById('gauge-score'),le=document.getElementById('gauge-level');
+  if(se){se.textContent=score;se.style.color=activeColor;}
+  if(le){le.textContent=lvlText;le.style.color=activeColor;}
+}
+
+// ═══════════════════════
+// INTEL
+// ═══════════════════════
+function loadIntel(){
+  fetchData(GS_INTEL).then(function(csv){
+    var rows=parseCSV(csv);
+    var hi=-1;
+    for(var i=0;i<rows.length;i++){for(var j=0;j<rows[i].length;j++)if(/tanggal/i.test(rows[i][j])){hi=i;break;}if(hi>=0)break;}
+    if(hi<0)hi=0;
+    var headers=rows[hi].map(function(h){return h.toLowerCase().trim();});
+    var data=[];
+    for(var r=hi+1;r<rows.length;r++){
+      var row=rows[r];if(!row||row.length<3)continue;
+      var tgl=getCol(row,headers,'tanggal');if(!tgl)continue;
+      var d=parseDate(tgl);if(!d||d.getFullYear()<2000)continue;
+      data.push({tanggal:tgl,_date:d,
+        wilayah:getCol(row,headers,'wilayah'),
+        score:parseFloat(getCol(row,headers,'risk score')||getCol(row,headers,'score')||getCol(row,headers,'risiko'))||0,
+        level:getCol(row,headers,'level risiko')||getCol(row,headers,'level')||'RENDAH',
+        status:getCol(row,headers,'status'),
+        action:getCol(row,headers,'action')});
+    }
+    if(!data.length)throw new Error('Tidak ada data valid');
+    data.sort(function(a,b){return a._date-b._date;});
+
+    var total=data.length,secure=0,sum=0;
+    var lvlCnt={RENDAH:0,MENENGAH:0,TINGGI:0,SANGAT:0,EKSTRIM:0};
+    data.forEach(function(d){
+      if(/low.?risk|rendah|secure|aman/i.test(d.status)||(!d.status&&!/kritis|ekstrim|sangat.?tinggi/i.test(d.level)))secure++;
+      sum+=d.score;
+      var c=lvlClass(d.level);if(lvlCnt[c]!==undefined)lvlCnt[c]++;
+    });
+    var avg=Math.round(sum/total),pct=Math.round(secure/total*100);
+    var days=Math.round((data[data.length-1]._date-data[0]._date)/(864e5))+1;
+
+    document.getElementById('v-total').textContent=total;
+    document.getElementById('v-secure').textContent=secure;
+    document.getElementById('v-pct').textContent=pct+'% Status Aman';
+    document.getElementById('v-avg').textContent=avg;
+    // Warna AVG sesuai level risiko
+    var avgColor = avg===0?'#4da6ff':avg<=5?'#4da6ff':avg<=10?'#00cc66':avg<=15?'#ffe033':avg<=20?'#cc0000':'#ff1a1a';
+    document.getElementById('v-avg').style.color=avgColor;
+    document.getElementById('v-avg').style.textShadow='0 0 20px '+avgColor+'66';
+    document.getElementById('v-days').textContent=days;
+    document.getElementById('intel-cnt').textContent=total+' ENTRI';
+    document.getElementById('period-range').textContent=fmtDate(data[0].tanggal)+' – '+fmtDate(data[data.length-1].tanggal);
+
+    // Executive summary
+    var dom='RENDAH';
+    if(lvlCnt.EKSTRIM>0)dom='EKSTRIM';
+    else if(lvlCnt.SANGAT>0)dom='SANGAT TINGGI';
+    else if(lvlCnt.TINGGI>0)dom='TINGGI';
+    else if(lvlCnt.MENENGAH>0)dom='MENENGAH';
+    (function(){
+    var aksiMap = {
+      'RENDAH':        'Rekomendasi Aksi: Lanjutkan monitoring rutin dan awareness. Tidak diperlukan tindakan khusus. Pertahankan koordinasi dengan aparat keamanan setempat.',
+      'MENENGAH':      'Rekomendasi Aksi: Tingkatkan frekuensi patroli dan pemantauan. Lakukan koordinasi awal dengan aparat keamanan. Siapkan rencana respons dini sebagai langkah antisipasi.',
+      'TINGGI':        'Rekomendasi Aksi: Aktifkan protokol siaga. Segera koordinasikan dengan Polres dan TNI setempat. Lakukan assessment lapangan dan siapkan tim respons. Laporkan ke manajemen senior.',
+      'SANGAT TINGGI': 'Rekomendasi Aksi: Aktifkan Crisis Management Team. Koordinasi intensif dengan Polres, TNI, dan instansi terkait. Batasi akses area terdampak. Eskalasi laporan ke Board of Management.',
+      'EKSTRIM':       'Rekomendasi Aksi: Aktifkan Emergency Response Plan secara penuh. Evakuasi personel dari area berisiko. Koordinasi darurat dengan seluruh aparat keamanan. Eskalasi segera ke Direksi dan pihak berwenang.'
+    };
+    var aksi = aksiMap[dom] || aksiMap['RENDAH'];
+    document.getElementById('exec-summary').innerHTML =
+      'Selama periode pemantauan, kondisi keamanan wilayah operasi Supreme Energy Muara Laboh berada pada level risiko <strong style="color:'+lvlColor(dom)+'">'+dom+'</strong>. '+
+      'Total '+total+' rekaman intel tercatat dengan '+secure+' ('+pct+'%) berstatus aman. Rata-rata skor risiko: <strong style="color:'+lvlColor(dom)+'">'+avg+'</strong>.<br>'+
+      '<span style="color:var(--accent);font-weight:500">'+aksi+'</span>';
+    })();
+    var bc=lvlColor(dom);
+    // Status label profesional
+    var statusLabel = dom==='RENDAH'       ? '✅ AMAN TERKENDALI' :
+                      dom==='MENENGAH'     ? '⚠️ WASPADA' :
+                      dom==='TINGGI'       ? '🔶 SIAGA' :
+                      dom==='SANGAT TINGGI'? '🔴 AWAS' : '🚨 DARURAT';
+    var badge=document.getElementById('exec-badge');
+    badge.textContent='Status : ' + statusLabel;
+    badge.style.color=bc;badge.style.borderColor=bc;badge.style.background='transparent';
+
+    // Timeline
+    var tlEl=document.getElementById('tl');tlEl.innerHTML='';
+    data.forEach(function(d,i){
+      var cls=lvlClass(d.level),clr=lvlColor(d.level);
+      tlEl.innerHTML+='<div class="tl-entry" style="animation-delay:'+(i*.03)+'s">'+
+        '<div class="tl-date">'+fmtDate(d.tanggal)+'</div>'+
+        '<div class="tl-info"><div class="tl-area">'+(d.wilayah||'Polres Solok Selatan')+'</div>'+
+        '<div class="tl-action">'+(d.action||'Monitoring/Awareness')+'</div></div>'+
+        '<div class="tl-score" style="color:'+clr+'">'+d.score+'</div>'+
+        '<span class="rb r'+cls+'">'+((d.level||'RENDAH').toUpperCase())+'</span></div>';
+    });
+
+    // Gauge — gunakan data terkini (entri terakhir)
+    var latest = data[data.length - 1];
+    var latestScore = latest.score;
+    var latestLevel = latest.level || 'RENDAH';
+    drawGauge(latestScore, 25, latestLevel);
+    // Update gauge panel tag with latest date
+    var gd = document.getElementById('gauge-date');
+    if(gd) gd.textContent = 'UPDATE: ' + fmtDate(latest.tanggal);
+    var gi = document.getElementById('gauge-info');
+    if(gi) gi.textContent = 'RISK SCORE: ' + latestScore + ' / MAX 25';
+
+    // Donut
+    donutChart=destroyChart(donutChart);
+    var dColors=['#4da6ff','#00cc66','#ffe033','#cc0000','#ff1a1a'];
+    var dLabels=['RENDAH','MENENGAH','TINGGI','SANGAT TINGGI','EKSTRIM'];
+    var dKeys=['RENDAH','MENENGAH','TINGGI','SANGAT','EKSTRIM'];
+    var filtered=dKeys.map(function(k,i){return lvlCnt[k]>0?{v:lvlCnt[k],l:dLabels[i],c:dColors[i]}:null;}).filter(Boolean);
+    var ctx2=document.getElementById('chart-donut').getContext('2d');
+    donutChart=new Chart(ctx2,{type:'doughnut',data:{
+      labels:filtered.map(function(d){return d.l;}),
+      datasets:[{data:filtered.map(function(d){return d.v;}),
+        backgroundColor:filtered.map(function(d){return d.c+'33';}),
+        borderColor:filtered.map(function(d){return d.c;}),borderWidth:2,hoverOffset:8}]
+    },options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#0e1d2e',borderColor:'#1a3050',borderWidth:1,callbacks:{label:function(c){return ' '+c.label+': '+c.raw+' entri';}}}}}});
+    var legEl=document.getElementById('donut-legend');legEl.innerHTML='';
+    filtered.forEach(function(d){legEl.innerHTML+='<div style="display:flex;align-items:center;gap:4px;font-size:9px;font-family:\'Share Tech Mono\',monospace"><div style="width:10px;height:10px;border-radius:2px;background:'+d.c+'33;border:1px solid '+d.c+'"></div><span style="color:'+d.c+'">'+d.l+'</span> <span style="color:var(--text)">'+d.v+'</span></div>';});
+
+    document.getElementById('sync-status').textContent='SYNC: '+new Date().toLocaleTimeString('id-ID').toUpperCase();
+  }).catch(function(e){
+    document.getElementById('tl').innerHTML='<div class="err">⚠ GAGAL MEMUAT DATA INTEL<br><span style="color:var(--muted);font-size:9px">'+e.message+'</span></div>';
+    document.getElementById('sync-status').textContent='GAGAL SYNC';
+  });
+}
+
+// ═══════════════════════
+// KEYWORD
+// ═══════════════════════
+function loadKeyword(){
+  fetchData(GS_KEYWORD).then(function(csv){
+    var rows=parseCSV(csv);
+    var hi=-1;
+    for(var i=0;i<rows.length;i++){for(var j=0;j<rows[i].length;j++)if(/keyword/i.test(rows[i][j])){hi=i;break;}if(hi>=0)break;}
+    if(hi<0)hi=0;
+    var headers=rows[hi].map(function(h){return h.toLowerCase().trim();});
+    var iKw=colIdx(headers,'keyword'),iSc=colIdx(headers,'score'),iNo=0;
+    if(iKw<0)iKw=1;if(iSc<0)iSc=2;
+    var kws=[],kwWithNo=[];
+    for(var r=hi+1;r<rows.length;r++){
+      var row=rows[r],name=(row[iKw]||'').trim(),sc=parseFloat(row[iSc]),no=parseInt(row[iNo]);
+      if(!name||isNaN(sc)||sc<=0||/tdk ada|tidak ada/i.test(name))continue;
+      kws.push({name:name,score:sc});
+      if(!isNaN(no))kwWithNo.push({no:no});
+    }
+    document.getElementById('v-kw').textContent=kws.length;
+    document.getElementById('hm-cnt').textContent=kws.length+' KEYWORD AKTIF';
+
+    // Top 15 bars
+    var top15=kws.slice().sort(function(a,b){return b.score-a.score;}).slice(0,15);
+    var maxKw=top15.length?top15[0].score:1;
+    var bhtml='';
+    top15.forEach(function(kw){
+      var p=Math.round(kw.score/maxKw*100),clr=kwColor(kw.score);
+      bhtml+='<div class="bar-row"><div class="bar-lbl"><span class="bar-name">'+kw.name.toUpperCase()+'</span><span class="bar-num" style="color:'+clr+'">'+kw.score+'</span></div><div class="bar-bg"><div class="bar-fill" style="width:'+p+'%;background:'+clr+'"></div></div></div>';
+    });
+    document.getElementById('kw-bars').innerHTML=bhtml;
+
+    // Heatmap
+    var hhtml='';
+    kws.slice().sort(function(a,b){return b.score-a.score;}).forEach(function(kw){
+      var clr=kwColor(kw.score);
+      hhtml+='<div class="kw" style="--c:'+clr+';border-left:3px solid '+clr+'"><div class="kw-n">'+kw.name+'</div><div class="kw-s" style="color:'+clr+'">'+kw.score+'</div></div>';
+    });
+    document.getElementById('heatmap').innerHTML=hhtml;
+
+    // KW Bar Chart
+    kwChart=destroyChart(kwChart);
+    var top20=kws.slice().sort(function(a,b){return b.score-a.score;}).slice(0,20);
+    kwChart=new Chart(document.getElementById('chart-kw').getContext('2d'),{type:'bar',data:{
+      labels:top20.map(function(k){return k.name.length>18?k.name.substr(0,16)+'..':k.name;}),
+      datasets:[{label:'Score',data:top20.map(function(k){return k.score;}),
+        backgroundColor:top20.map(function(k){return kwColor(k.score)+'99';}),
+        borderColor:top20.map(function(k){return kwColor(k.score);}),borderWidth:1,borderRadius:2}]
+    },options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#0e1d2e',borderColor:'#1a3050',borderWidth:1}},
+      scales:{x:{grid:{color:'rgba(26,48,80,.4)'},ticks:{color:'#5a7a99'},beginAtZero:true},
+        y:{grid:{display:false},ticks:{color:'#8baac8',font:{size:8}}}}}});
+
+    // Category Pie
+    var cats={'Sosial Politik':0,'Sosial Ekonomi':0,'Keamanan Khusus':0,'Keamanan Umum':0,'Sosial Budaya':0,'Bencana Alam':0};
+    var kwCatMap={'Sosial Politik':['ormas','unjuk rasa','kerusuhan','provokasi','blokade jalan','pemogokan kerja','isu sara','hoaks','radikalisme','demonstrasi','konflik massa','dinamika politik'],'Sosial Ekonomi':['sengketa lahan','intimidasi','blokade oleh','pemogokan tenaga','tuntutan tenaga','gangguan distribusi','penyalahgunaan csr','pungutan liar'],'Keamanan Khusus':['intrusion','sabotase','akses ilegal','terorisme','insider threat','pencurian aset','vandalisme','serangan siber','penyadapan','pemalsuan','ancaman thd','infiltrasi'],'Keamanan Umum':['pencurian','narkoba','penipuan','perselisihan ring','perampokan','begal','penganiayaan','perkelahian','senjata ilegal','kecelakaan'],'Sosial Budaya':['penolakan thd','pelanggaran adat','diskriminasi','penyebaran rumor','gangguan situs','ketegangan antar','penolakan tenaga','pelanggaran norma','sensitivitas'],'Bencana Alam':['banjir','longsor','gempa','angin kencang','letusan','kebakaran','kekeringan','petir','cuaca ekstrem','likuifaksi']};
+    var lainnya=0;
+    kws.forEach(function(kw){
+      var nm=kw.name.toLowerCase(),assigned=false;
+      Object.keys(kwCatMap).forEach(function(cat){if(!assigned&&kwCatMap[cat].some(function(k){return nm.indexOf(k)>=0;})){cats[cat]+=kw.score;assigned=true;}});
+      if(!assigned)lainnya+=kw.score;
+    });
+    var catColors=['#4da6ff','#00cc66','#e74c3c','#f39c12','#9b59b6','#16a085'];
+    var catKeys=Object.keys(cats).filter(function(k){return cats[k]>0;});
+    catChart=destroyChart(catChart);
+    catChart=new Chart(document.getElementById('chart-cat').getContext('2d'),{type:'pie',data:{
+      labels:catKeys,
+      datasets:[{data:catKeys.map(function(k){return cats[k];}),
+        backgroundColor:catColors.map(function(c){return c+'44';}),
+        borderColor:catColors,borderWidth:2,hoverOffset:6}]
+    },options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{color:'#5a7a99',boxWidth:10,font:{size:8}}},
+        tooltip:{backgroundColor:'#0e1d2e',borderColor:'#1a3050',borderWidth:1}}}});
+
+    renderMatrix(kwWithNo);
+  }).catch(function(e){
+    document.getElementById('kw-bars').innerHTML='<div class="err">⚠ GAGAL MEMUAT KEYWORD<br><span style="color:var(--muted);font-size:9px">'+e.message+'</span></div>';
+  });
+}
+
+// ═══════════════════════
+// REKOMENDASI
+// ═══════════════════════
+var REK_STATIC={
+  'Sosial Politik':['Stakeholder Engagement: Membangun komunikasi yang baik dengan masyarakat dan tokoh lokal.','Early Warning System: Memantau dinamika sosial melalui media sosial dan jaringan komunitas.','Koordinasi dengan Aparat Keamanan: Seperti Polri, TNI, dan pemerintah daerah.','Crisis Management Plan: Menyiapkan prosedur tanggap darurat untuk menghadapi eskalasi konflik.','Community Development Program: Mengurangi potensi konflik melalui pemberdayaan masyarakat.'],
+  'Sosial Ekonomi':['Stakeholder Engagement: Melibatkan tokoh masyarakat, pelaku usaha lokal, dan pemerintah daerah dalam komunikasi yang terbuka.','Program Pemberdayaan Ekonomi: Mengembangkan program CSR yang berfokus pada peningkatan kapasitas ekonomi masyarakat sekitar.','Kebijakan Rekrutmen Lokal: Memberikan prioritas kepada tenaga kerja lokal dengan tetap mempertimbangkan kompetensi.','Sistem Pengamanan Terpadu: Meningkatkan patroli keamanan dan koordinasi dengan aparat penegak hukum.','Manajemen Keluhan (Grievance Mechanism): Menyediakan saluran resmi bagi masyarakat untuk menyampaikan aspirasi atau keluhan.','Monitoring Dinamika Sosial: Melakukan pemantauan rutin terhadap kondisi sosial-ekonomi di sekitar wilayah operasional.'],
+  'Keamanan Khusus':['Peningkatan Sistem Kontrol Akses: Implementasi kartu identitas, biometrik, dan sistem manajemen pengunjung.','Program Insider Threat Management: Melakukan background check, monitoring perilaku, dan pelatihan kesadaran keamanan.','Penguatan Keamanan Siber: Penerapan firewall, enkripsi data, multi-factor authentication (MFA), dan pemantauan jaringan secara real-time.','Perlindungan Personel Kunci: Penyediaan pengawalan, prosedur perjalanan aman, dan manajemen krisis.','Pengamanan Rantai Pasok: Audit keamanan vendor dan kontraktor sebelum diberikan akses.','Sistem Deteksi dan Respons Terpadu: Integrasi CCTV, alarm, access control, dan command center untuk respons cepat.','Koordinasi dengan Aparat Keamanan: Bekerja sama dengan Polri, TNI, dan instansi terkait untuk perlindungan objek vital.','Pengendalian Penggunaan Drone: Penetapan zona larangan terbang dan penggunaan teknologi anti-drone jika diperlukan.'],
+  'Keamanan Umum':['Peningkatan Patroli Keamanan: Melakukan patroli rutin di area internal dan perimeter, termasuk area Ring 1.','Pemasangan Sistem Pengawasan: Implementasi CCTV, penerangan yang memadai, dan sistem alarm.','Koordinasi dengan Aparat Penegak Hukum: Bekerja sama dengan Kepolisian dan aparat setempat untuk respons cepat terhadap insiden.','Program Community Engagement: Membangun hubungan baik dengan masyarakat sekitar untuk mencegah konflik.','Sosialisasi dan Edukasi: Memberikan edukasi kepada karyawan dan masyarakat terkait bahaya narkoba, penipuan, dan tindakan kriminal lainnya.','Sistem Pelaporan Insiden: Menyediakan mekanisme pelaporan yang mudah diakses untuk mendeteksi potensi gangguan keamanan sejak dini.'],
+  'Sosial Budaya':['Stakeholder Engagement: Melibatkan tokoh adat, tokoh agama, dan pemimpin masyarakat dalam setiap tahap proyek.','Cultural Awareness Training: Memberikan pelatihan kepada karyawan mengenai norma dan budaya lokal.','Social Impact Assessment: Melakukan kajian dampak sosial budaya sebelum dan selama operasional proyek.','Grievance Mechanism: Menyediakan mekanisme pengaduan yang transparan dan mudah diakses oleh masyarakat.','Penjadwalan Operasional yang Sensitif Budaya: Menyesuaikan kegiatan dengan hari besar keagamaan atau upacara adat.','Program CSR yang Inklusif: Memastikan distribusi manfaat yang adil bagi seluruh kelompok masyarakat.','Koordinasi dengan Pemerintah dan Lembaga Adat: Untuk memastikan kepatuhan terhadap regulasi dan norma lokal.'],
+  'Bencana Alam':['Risk Assessment dan Hazard Mapping: Melakukan pemetaan potensi bencana berdasarkan lokasi operasional.','Business Continuity Plan (BCP): Menyusun rencana keberlangsungan bisnis untuk memastikan operasional tetap berjalan setelah bencana.','Emergency Response Plan (ERP): Menyediakan prosedur tanggap darurat yang jelas, termasuk jalur evakuasi dan titik kumpul.','Sistem Peringatan Dini (Early Warning System): Memanfaatkan teknologi untuk mendeteksi potensi bencana seperti banjir, tsunami, atau cuaca ekstrem.','Desain Infrastruktur Tahan Bencana: Menerapkan standar konstruksi yang tahan terhadap gempa, angin kencang, dan banjir.','Pelatihan dan Simulasi: Melakukan latihan evakuasi dan simulasi bencana secara berkala bagi karyawan.','Koordinasi dengan Instansi Terkait: Bekerja sama dengan BMKG, BNPB, dan pemerintah daerah untuk memperoleh informasi terkini.','Perlindungan Sistem Utilitas: Memasang penangkal petir, sistem drainase yang baik, serta perlindungan terhadap peralatan penting.']
+};
+function renderRekomendasi(cats){
+  var names=Object.keys(REK_STATIC),tH='',pH='';
+  names.forEach(function(cat,idx){
+    var items=cats[cat]||[];if(!items.length)return;
+    tH+='<button class="rtab'+(idx===0?' on':'')+'" onclick="showRek('+idx+')">'+cat+'</button>';
+    var p='<div class="rpanel'+(idx===0?' on':'')+'" id="rp-'+idx+'">';
+    items.forEach(function(item){var ci=item.indexOf(':'),title=ci>0?item.slice(0,ci):item,rest=ci>0?item.slice(ci+1):'';p+='<div class="ri"><div class="rd"></div><div class="rt"><strong>'+title+(rest?':':'')+'</strong>'+rest+'</div></div>';});
+    p+='</div>';pH+=p;
+  });
+  document.getElementById('rtabs').innerHTML=tH;
+  document.getElementById('rpanels').innerHTML=pH;
+}
+function loadRekomendasi(){
+  renderRekomendasi(REK_STATIC);
+  fetchData(GS_REK).then(function(csv){
+    var rows=parseCSV(csv),names=Object.keys(REK_STATIC),cats={},cur=null;
+    var keys=[['sosial','politik'],['sosial','ekonomi'],['keaman','khusus'],['keaman','umum'],['sosial','budaya'],['bencana','alam']];
+    rows.forEach(function(row){row.forEach(function(cell){
+      if(!cell||!cell.trim())return;var c=cell.trim(),cl=c.toLowerCase().replace(/[_-]/g,' '),m=-1;
+      keys.forEach(function(k,i){if(cl.indexOf(k[0])>=0&&cl.indexOf(k[1])>=0&&c.length<200)m=i;});
+      if(m>=0){cur=names[m];if(!cats[cur])cats[cur]=[];}
+      else if(cur&&c.length>20&&!/^\d+$/.test(c)&&!/^rekomendasi pengelolaan/i.test(c)){if(!cats[cur])cats[cur]=[];if(cats[cur].indexOf(c)<0)cats[cur].push(c);}
+    });});
+    var found=names.filter(function(k){return cats[k]&&cats[k].length>=3;}).length;
+    if(found===6)renderRekomendasi(cats);
+  }).catch(function(){});
+}
+
+// ═══════════════════════
+// MATRIX
+// ═══════════════════════
+function renderMatrix(kwData){
+  var md={
+    5:{1:'7,9,15,37,39,54',2:'35,42,49,50,57,58',3:'19,24,27,62',4:'',5:'55'},
+    4:{1:'3,33,34,40',2:'6,13,16,56',3:'10,21,22,32,61',4:'25,28',5:''},
+    3:{1:'1,36,38,51,59',2:'4,8,12,18,26,43,44',3:'5,17,29,31,45',4:'11,14,20',5:'23,30'},
+    2:{1:'46,47',2:'41',3:'2,60',4:'',5:''},
+    1:{1:'49,52,53',2:'48',3:'',4:'',5:''}
+  };
+  function cls(imp,l){
+    if((imp===5&&l>=4)||(imp===4&&l===5))return'me';
+    if((imp===5&&l===3)||(imp===4&&l===4)||(imp===3&&l===5))return'mc';
+    if((imp===5&&l===2)||(imp===4&&l===3)||(imp===3&&(l===3||l===4))||(imp===2&&(l===4||l===5)))return'mh';
+    if((imp===4&&l===2)||(imp===3&&l===2)||(imp===2&&(l===2||l===3))||(imp===1&&l>=3))return'mm';
+    return'ml';
+  }
+  var html='<thead><tr><th class="ax" style="white-space:nowrap;font-size:8px">IMPACT \\ LIKELIHOOD</th>';
+  for(var l=1;l<=5;l++)html+='<th style="min-width:42px">L'+l+'</th>';
+  html+='</tr></thead><tbody>';
+  for(var imp=5;imp>=1;imp--){
+    html+='<tr><th class="ax">I'+imp+'</th>';
+    for(var l2=1;l2<=5;l2++){
+      var cell=(md[imp]&&md[imp][l2])?md[imp][l2]:'',s=imp*l2;
+      var cnt=cell?cell.split(',').length:0;
+      html+='<td class="'+cls(imp,l2)+'" title="Score:'+s+' | KW:'+(cell||'—')+'">'+s+'<br><span style="font-size:7px;opacity:.8">'+(cnt?cnt+'kw':'—')+'</span></td>';
+    }
+    html+='</tr>';
+  }
+  document.getElementById('mtx').innerHTML=html+'</tbody>';
+}
+renderMatrix(null);
+
+// ═══════════════════════
+// TAB
+// ═══════════════════════
+function showRek(idx){
+  document.querySelectorAll('.rpanel').forEach(function(el){el.classList.remove('on');});
+  document.querySelectorAll('.rtab').forEach(function(el){el.classList.remove('on');});
+  var p=document.getElementById('rp-'+idx);if(p)p.classList.add('on');
+  var ts=document.querySelectorAll('.rtab');if(ts[idx])ts[idx].classList.add('on');
+}
+
+// ═══════════════════════
+// INIT
+// ═══════════════════════
+function loadAll(){loadIntel();loadKeyword();loadRekomendasi();}
+loadAll();
+setInterval(loadAll,5*60*1000);
+</script>
+</body>
+</html>
