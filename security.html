@@ -292,7 +292,7 @@ footer{margin-top:14px;padding:12px 20px;background:var(--panel);border:1px soli
   <div class="ta-sc kk-c"><div class="ta-sc-lbl">INCIDENT</div><div class="ta-sc-val" id="ta-v-inc">—</div><div class="ta-sc-det">KEJADIAN AKTIF</div></div>
   <div class="ta-sc ac"><div class="ta-sc-lbl">MAX SCORE</div><div class="ta-sc-val" id="ta-v-max">—</div><div class="ta-sc-det">SKOR TERTINGGI</div></div>
   <div class="ta-sc ku-c"><div class="ta-sc-lbl">KK INSIDEN</div><div class="ta-sc-val" id="ta-v-kkinc">—</div><div class="ta-sc-det">KEAMANAN KHUSUS</div></div>
-  <div class="ta-sc pp"><div class="ta-sc-lbl">INC. RATE</div><div class="ta-sc-val" id="ta-v-rate">—</div><div class="ta-sc-det">PROPORSI INSIDEN</div></div>
+  <div class="ta-sc pp"><div class="ta-sc-lbl">INC. RATE</div><div class="ta-sc-val" id="ta-v-rate">—</div><div class="ta-sc-det">KK &amp; KU GABUNGAN</div></div>
 </div>
 
 <!-- ROW 1: TIMELINE + DONUT -->
@@ -581,7 +581,6 @@ function renderTrend(data) {
   var incidents = data.filter(function(d){return d.score>0;}).length;
   var kkInc     = data.filter(function(d){return(d.kkScore||0)>0;}).length;
   var kuInc     = data.filter(function(d){return(d.kuScore||0)>0;}).length;
-  var speInc    = data.filter(function(d){return(d.speScore||0)>0;}).length;
   var rate      = Math.round(incidents/data.length*100);
   var days      = Math.round((data[data.length-1]._date - data[0]._date)/(864e5))+1;
 
@@ -601,12 +600,10 @@ function renderTrend(data) {
   var wkMap={};
   data.forEach(function(d){
     var wk=weekKey(d._date);
-    if(!wkMap[wk])wkMap[wk]={sc:[],kk:[],ku:[],spe:[],spp:[],start:d.tanggal,end:d.tanggal,cnt:0};
+    if(!wkMap[wk])wkMap[wk]={sc:[],kk:[],ku:[],start:d.tanggal,end:d.tanggal,cnt:0};
     wkMap[wk].sc.push(d.score);
     wkMap[wk].kk.push(d.kkScore||0);
     wkMap[wk].ku.push(d.kuScore||0);
-    wkMap[wk].spe.push(d.speScore||0);
-    wkMap[wk].spp.push(d.sppScore||0);
     wkMap[wk].end=d.tanggal;wkMap[wk].cnt++;
   });
   var wks=Object.keys(wkMap).sort();
@@ -614,9 +611,7 @@ function renderTrend(data) {
   var wMax=wks.map(function(w){return Math.max.apply(null,wkMap[w].sc);});
   var wKKAvg=wks.map(function(w){var s=wkMap[w].kk;return Math.round(s.reduce(function(a,b){return a+b;},0)/s.length*10)/10;});
   var wKUAvg=wks.map(function(w){var s=wkMap[w].ku;return Math.round(s.reduce(function(a,b){return a+b;},0)/s.length*10)/10;});
-  var wSPEAvg=wks.map(function(w){var s=wkMap[w].spe||[];return s.length?Math.round(s.reduce(function(a,b){return a+b;},0)/s.length*10)/10:0;});
-  // Non-KK combined (KU + Sosial Ekonomi + Sosial Politik) for chart
-  var wNonKKAvg=wks.map(function(w,i){return Math.max(wKUAvg[i],wSPEAvg[i]);});
+
   var wLbls=wks.map(function(_,i){return 'Mg-'+(i+1);});
   document.getElementById('ta-week-tag').textContent=wks.length+' MINGGU';
 
@@ -699,7 +694,7 @@ function renderTrend(data) {
     type:'bar',
     data:{labels:wLbls,datasets:[
       {label:'KK (Keamanan Khusus)',data:wKKAvg,backgroundColor:'rgba(255,107,53,.35)',borderColor:'rgba(255,107,53,.8)',borderWidth:1},
-      {label:'Non-KK (KU / Sosial Ekonomi / Sosial Politik)',data:wNonKKAvg,backgroundColor:'rgba(0,212,255,.35)',borderColor:'rgba(0,212,255,.8)',borderWidth:1}
+      {label:'KU (Keamanan Umum)',data:wKUAvg,backgroundColor:'rgba(0,212,255,.35)',borderColor:'rgba(0,212,255,.8)',borderWidth:1}
     ]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:true,position:'bottom',labels:{color:'#8baac8',font:{size:8},boxWidth:10,padding:8}},tooltip:ttCfg},
@@ -774,7 +769,7 @@ function renderTrend(data) {
       : 'Tidak ada insiden. '
     )
     +'KK: <span style="color:var(--green)">NIHIL</span>. '
-    +'KU: '+kuInc+' insiden. Sos.Ekonomi: '+speInc+' insiden. '
+    +'KU: '+kuInc+' insiden. '
     +'MA-3: <span style="color:var(--accent2)">'+lastMA+'</span>. '
     +'Proyeksi: <span style="color:var(--green)">RENDAH</span>. · PIC: Daryono / Ichsan';
   document.getElementById('ta-foot').innerHTML=footTxt;
@@ -817,11 +812,6 @@ function renderTrend(data) {
       : '<span style="color:var(--muted)">→ stabil</span>';
 
   // Trend Sosial Ekonomi spesifik
-  var speRec3  = data.slice(-3).map(function(d){return d.speScore||0;});
-  var speLatest= speRec3[speRec3.length-1];
-  var trendSPEDir = speLatest>0
-    ? '<span style="color:var(--accent2)">⚠ Aktif — '+fmtShort(data[data.length-1].tanggal)+'</span>'
-    : '<span style="color:var(--green)">→ Tidak ada gangguan terkini</span>';
 
   // Proyeksi berdasarkan tren terkini yang benar
   var lastScore = data[data.length-1].score;
@@ -846,7 +836,6 @@ function renderTrend(data) {
     )+
     '&nbsp;|&nbsp; KK: '+trendKK+
     ' &nbsp;|&nbsp; KU: '+trendKUDir+
-    ' &nbsp;|&nbsp; Sosial Ekonomi: '+trendSPEDir+
     ' &nbsp;|&nbsp; MA-3: <strong style="color:var(--accent2)">'+lastMA+'</strong>'+
     ' &nbsp;|&nbsp; Proyeksi: '+proyeksiStr+'.';
 
