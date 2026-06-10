@@ -450,7 +450,7 @@ var PROXIES = [
 ];
 
 var KK_KEYWORDS = ['intrusion','sabotase','akses ilegal','terorisme','insider threat','pencurian aset','vandalisme','serangan siber','penyadapan komunikasi','pemalsuan identitas','ancaman thd personel','ancaman terhadap personel','infiltrasi rantai pasok'];
-var KU_KEYWORDS = ['pencurian','narkoba','penipuan','perselisihan ring','perampokan','begal','penganiayaan','perkelahian','senjata ilegal','kecelakaan lalu lintas'];
+var KU_KEYWORDS = ['pencurian','narkoba','penipuan','perselisihan','perampokan','begal','penganiayaan','perkelahian','senjata ilegal','kecelakaan lalu lintas','intimidasi','pungutan liar','premanisme','pencurian kendaraan','judi','mabuk'];
 
 function isKK(name){var n=name.toLowerCase().trim();return KK_KEYWORDS.some(function(k){return n.indexOf(k)>=0;});}
 function isKU(name){var n=name.toLowerCase().trim();if(n.indexOf('pencurian aset')>=0)return false;return KU_KEYWORDS.some(function(k){return n.indexOf(k)>=0;});}
@@ -847,7 +847,7 @@ function renderTrend(data) {
 // ── renderKeywordData: render keyword bars/heatmap/charts dari array [{n,s}]
 function renderKeywordData(allKwArr){
   var KK_KW=['intrusion','sabotase','akses ilegal','terorisme','insider threat','pencurian aset','vandalisme','serangan siber','penyadapan komunikasi','pemalsuan identitas','ancaman thd personel','ancaman terhadap personel','infiltrasi rantai pasok'];
-  var KU_KW=['pencurian','narkoba','penipuan','perselisihan ring','perampokan','begal','penganiayaan','perkelahian','senjata ilegal','kecelakaan lalu lintas'];
+  var KU_KW=['pencurian','narkoba','penipuan','perselisihan','perampokan','begal','penganiayaan','perkelahian','senjata ilegal','kecelakaan lalu lintas','intimidasi','pungutan liar','premanisme','pencurian kendaraan','judi','mabuk'];
   function chkKK(n){var nl=n.toLowerCase();return KK_KW.some(function(k){return nl.indexOf(k)>=0;});}
   function chkKU(n){var nl=n.toLowerCase();if(nl.indexOf('pencurian aset')>=0)return false;return KU_KW.some(function(k){return nl.indexOf(k)>=0;});}
 
