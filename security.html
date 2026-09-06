@@ -594,7 +594,7 @@ function renderTrend(data) {
   var speSc   = data.map(function(d){return d.speScore||0;});  // Sosial Ekonomi
   var sppSc   = data.map(function(d){return d.sppScore||0;});  // Sosial Politik
   var months  = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
-  var labels  = data.map(function(d){var s=d.tanggal.split('/');return s.length===3?s[0]+'/'+months[parseInt(s[1])-1]:d.tanggal;});
+  var labels  = data.map(function(d){var s=d.tanggal.splitvar labels  = data.map(function(d){var s=d.tanggal.split('/');if(s.length===3)return s[0]+'/'+months[parseInt(s[1])-1];var dt=new Date(d.tanggal);return !isNaN(dt)?dt.getDate()+'/'+months[dt.getMonth()]:d.tanggal;});('/');return s.length===3?s[0]+'/'+months[parseInt(s[1])-1]:d.tanggal;});
 
   var maxScore  = Math.max.apply(null,scores)||0;
   var incidents = data.filter(function(d){return d.score>0;}).length;
@@ -758,7 +758,7 @@ function renderTrend(data) {
     var prev=(i>0)?wMax[i-1]:0;
     var arrow=mx>prev?'↑':mx<prev?'↓':'→';
     var arrClr=arrow==='↑'?'#ff1a1a':arrow==='↓'?'#00ff88':'#5a7a99';
-    function fmtS(tgl){var s=tgl.split('/');return s.length===3?s[0]+' '+months[parseInt(s[1])-1]:tgl;}
+    function fmtS(tgl){var s=tgl.split('/');if(s.length===3)return s[0]+' '+months[parseInt(s[1])-1];var dt=new Date(tgl);return !isNaN(dt)?dt.getDate()+' '+months[dt.getMonth()]:tgl;};return s.length===3?s[0]+' '+months[parseInt(s[1])-1]:tgl;}
     var period=fmtS(wd.start)+(wd.start!==wd.end?' – '+fmtS(wd.end):'');
     tblHtml+='<tr class="'+(hasInc?'ta-hl':'')+'">'
       +'<td style="color:'+(hasInc?'#ff6b35':'var(--muted)')+';font-weight:'+(hasInc?'700':'400')+'">'+(i+1)+(hasInc?' ⚠':'')+'</td>'
@@ -795,7 +795,7 @@ function renderTrend(data) {
 
   // ── UPDATE EXECUTIVE SUMMARY — TREND ANALYSIS WORDING ──
   var months2=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
-  function fmtShort(tgl){var s=tgl.split('/');return s.length===3?s[0]+' '+months2[parseInt(s[1])-1]+' '+s[2]:tgl;}
+  function fmtShort(tgl){var s=tgl.split('/');if(s.length===3)return s[0]+' '+months2[parseInt(s[1])-1]+' '+s[2];var dt=new Date(tgl);return !isNaN(dt)?dt.getDate()+' '+months2[dt.getMonth()]+' '+dt.getFullYear():tgl;};return s.length===3?s[0]+' '+months2[parseInt(s[1])-1]+' '+s[2]:tgl;}
 
   var totalEntri   = data.length;
   var totalHari    = days;
@@ -1059,7 +1059,7 @@ function renderIntelData(intelArr){
 
   var d0=data[0],d1=data[data.length-1];
   var mths=['JAN','FEB','MAR','APR','MEI','JUN','JUL','AGT','SEP','OKT','NOV','DES'];
-  function fD(raw){var s=raw.split('/');return s.length===3?s[0]+' '+mths[parseInt(s[1])-1]+' '+s[2]:raw;}
+  function fD(raw){var s=raw.split('/');if(s.length===3)return s[0]+' '+mths[parseInt(s[1])-1]+' '+s[2];var dt=new Date(raw);if(!isNaN(dt))return dt.getDate()+' '+mths[dt.getMonth()]+' '+dt.getFullYear();return raw;}?s[0]+' '+mths[parseInt(s[1])-1]+' '+s[2]:raw;}
   document.getElementById('period-range').textContent=fD(d0.tanggal)+' – '+fD(d1.tanggal);
 
   renderTrend(data);
@@ -1156,7 +1156,7 @@ function loadIntel(){
     var banner=document.getElementById('status-banner');banner.style.borderLeftColor=statusColor;
 
     var d0=data[0],d1=data[data.length-1];
-    function fmtD(raw){var s=raw.trim().split('/');if(s.length===3){var m=['JAN','FEB','MAR','APR','MEI','JUN','JUL','AGT','SEP','OKT','NOV','DES'];return s[0]+' '+m[parseInt(s[1])-1]+' '+s[2];}return raw;}
+    function fmtD(raw){var m=['JAN','FEB','MAR','APR','MEI','JUN','JUL','AGT','SEP','OKT','NOV','DES'];var s=raw.trim().split('/');if(s.length===3)return s[0]+' '+m[parseInt(s[1])-1]+' '+s[2];var dt=new Date(raw);if(!isNaN(dt))return dt.getDate()+' '+m[dt.getMonth()]+' '+dt.getFullYear();return raw;};if(s.length===3){var m=['JAN','FEB','MAR','APR','MEI','JUN','JUL','AGT','SEP','OKT','NOV','DES'];return s[0]+' '+m[parseInt(s[1])-1]+' '+s[2];}return raw;}
     document.getElementById('period-range').textContent=fmtD(d0.tanggal)+' – '+fmtD(d1.tanggal);
 
     function lvlColor(l){return l.indexOf('EKSTRIM')>=0?'#ff1a1a':l.indexOf('SANGAT')>=0?'#cc0000':l==='TINGGI'?'#ffe033':(l==='MENENGAH'||l==='SEDANG')?'#00cc66':'#4da6ff';}
