@@ -1051,15 +1051,14 @@ function renderIntelData(intelArr){
   var statusColor=latestLevel.indexOf('EKSTRIM')>=0?'var(--kritis)':latestLevel.indexOf('SANGAT')>=0?'var(--sangat)':latestLevel==='TINGGI'?'var(--tinggi)':(latestLevel==='MENENGAH'||latestLevel==='SEDANG')?'var(--sedang)':'var(--green)';
   var aksiMap={'RENDAH':'Lanjutkan monitoring rutin.','MENENGAH':'Tingkatkan frekuensi patroli.','TINGGI':'Aktifkan protokol siaga. Koordinasikan dengan Polres dan TNI.','SANGAT TINGGI':'Aktifkan Crisis Management Team.','EKSTRIM':'Aktifkan Emergency Response Plan.'};
   var domKey=latestLevel.indexOf('EKSTRIM')>=0?'EKSTRIM':latestLevel.indexOf('SANGAT')>=0?'SANGAT TINGGI':latestLevel==='TINGGI'?'TINGGI':(latestLevel==='MENENGAH'||latestLevel==='SEDANG')?'MENENGAH':'RENDAH';
-
+var mths=['JAN','FEB','MAR','APR','MEI','JUN','JUL','AGT','SEP','OKT','NOV','DES']; lalu di baris berikutnya: function fD(raw){var s=raw.split('/');if(s.length===3)return s[0]+' '+mths[parseInt(s[1])-1]+' '+s[2];var dt=new Date(raw);if(!isNaN(dt))return dt.getDate()+' '+mths[dt.getMonth()]+' '+dt.getFullYear();return raw;}
   document.getElementById('status-text').innerHTML='Data terkini (<strong>'+fD(latest.tanggal)+'</strong>): Risk Score = <strong style="color:'+statusColor+'">'+latestScore+'</strong> | Level = <strong style="color:'+statusColor+'">'+latestLevel+'</strong>. Dari '+total+' rekaman, '+secure+' ('+Math.round(secure/total*100)+'%) aman. Avg: '+avg+'. <span style="color:var(--accent2)">'+aksiMap[domKey]+'</span>';
   var badge=document.getElementById('status-badge');
   badge.textContent='Status: '+statusTxt(latestLevel);
   badge.style.color=statusColor;badge.style.borderColor=statusColor;
 
   var d0=data[0],d1=data[data.length-1];
-  var mths=['JAN','FEB','MAR','APR','MEI','JUN','JUL','AGT','SEP','OKT','NOV','DES'];
-  function fD(raw){var s=raw.split('/');if(s.length===3)return s[0]+' '+mths[parseInt(s[1])-1]+' '+s[2];var dt=new Date(raw);if(!isNaN(dt))return dt.getDate()+' '+mths[dt.getMonth()]+' '+dt.getFullYear();return raw;}
+  
   document.getElementById('period-range').textContent=fD(d0.tanggal)+' – '+fD(d1.tanggal);
 
   renderTrend(data);
